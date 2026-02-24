@@ -1,0 +1,261 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyPx2NuwRnE7mXCbFnuud7vL",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Veeramashwari12/Assignment/blob/main/week3\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 3,
+      "metadata": {
+        "id": "TSCXfpg29xqI",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "fc2e4667-953f-4e37-e61c-2a7e626399d6"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "dataset after removeing outliers\n",
+            "(636, 9)\n"
+          ]
+        }
+      ],
+      "source": [
+        "import pandas as pd\n",
+        "df = pd.read_csv(\"/content/diabetes (1).csv\")\n",
+        "# select numeric columns\n",
+        "num_cols = df.select_dtypes(include=['int64', 'float64']).columns\n",
+        "for col in num_cols:\n",
+        "  Q1 =df[col].quantile(0.25)\n",
+        "  Q3=df[col].quantile(0.75)\n",
+        "  IQR=Q3-Q1\n",
+        "  lower=Q1-1.5*IQR\n",
+        "  upper=Q3+1.5*IQR\n",
+        "  df=df[(df[col]>lower) & (df[col]<upper)]\n",
+        "print(\"dataset after removeing outliers\")\n",
+        "print(df.shape)\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from sklearn.preprocessing import MinMaxScaler\n",
+        "scaler=MinMaxScaler()\n",
+        "df_minmax=scaler.fit_transform(df)\n",
+        "\n",
+        "\n",
+        "df_minmax=pd.DataFrame(df_minmax,columns=df.columns)\n",
+        "print(df_minmax.head())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "EulfUHcqA1qu",
+        "outputId": "d5c8fc28-8aa7-4d64-ef0d-f10e67eaae2e"
+      },
+      "execution_count": 4,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "   Pregnancies   Glucose  BloodPressure  SkinThickness   Insulin       BMI  \\\n",
+            "0     0.461538  0.675325       0.500000       0.583333  0.000000  0.488889   \n",
+            "1     0.076923  0.266234       0.411765       0.483333  0.000000  0.266667   \n",
+            "2     0.615385  0.902597       0.382353       0.000000  0.000000  0.161905   \n",
+            "3     0.076923  0.292208       0.411765       0.383333  0.286585  0.314286   \n",
+            "4     0.384615  0.467532       0.529412       0.000000  0.000000  0.234921   \n",
+            "\n",
+            "   DiabetesPedigreeFunction       Age  Outcome  \n",
+            "0                  0.506458  0.659091      1.0  \n",
+            "1                  0.251845  0.227273      0.0  \n",
+            "2                  0.547970  0.250000      1.0  \n",
+            "3                  0.082103  0.000000      0.0  \n",
+            "4                  0.113469  0.204545      0.0  \n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from sklearn.preprocessing import StandardScaler\n",
+        "scaler=StandardScaler()\n",
+        "df_standard=scaler.fit_transform(df)\n",
+        "\n",
+        "df_standard=pd.DataFrame(df_standard,columns=df.columns)\n",
+        "print(df_standard.head())\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "U_P1HBYdBmn2",
+        "outputId": "fdc0357e-edad-429f-889d-7f16743c8899"
+      },
+      "execution_count": 5,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "   Pregnancies   Glucose  BloodPressure  SkinThickness   Insulin       BMI  \\\n",
+            "0     0.681426  1.007083      -0.001252       0.931808 -0.828368  0.250112   \n",
+            "1    -0.857590 -1.168451      -0.532173       0.538687 -0.828368 -0.840697   \n",
+            "2     1.297032  2.215713      -0.709147      -1.361398 -0.828368 -1.354935   \n",
+            "3    -0.857590 -1.030322      -0.532173       0.145566  0.302685 -0.606952   \n",
+            "4     0.373623 -0.097950       0.175722      -1.361398 -0.828368 -0.996526   \n",
+            "\n",
+            "   DiabetesPedigreeFunction       Age  Outcome  \n",
+            "0                  0.825677  1.604481  1.48732  \n",
+            "1                 -0.304411 -0.144283 -0.67235  \n",
+            "2                  1.009930 -0.052243  1.48732  \n",
+            "3                 -1.057802 -1.064686 -0.67235  \n",
+            "4                 -0.918589 -0.236323 -0.67235  \n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#employee dataset\n",
+        "#outlier detection\n",
+        "emp=pd.read_csv(\"/content/employees.csv\")\n",
+        "num_cols=emp.select_dtypes(include=['int64','float64']).columns\n",
+        "for col in num_cols:\n",
+        "  Q1=emp[col].quantile(0.25)\n",
+        "  Q3=emp[col].quantile(0.75)\n",
+        "  IQR=Q3-Q1\n",
+        "  lower=Q1-1.5*IQR\n",
+        "  upper=Q3+1.5*IQR\n",
+        "emp=emp[(emp[col]>lower) & (emp[col]<upper)]\n",
+        "print(\"dataset after removing outliers\")\n",
+        "print(emp.shape)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "DMIPPQVyByms",
+        "outputId": "2ebd94e0-7ac6-4bb9-cf49-13cf710bbed9"
+      },
+      "execution_count": 10,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "dataset after removing outliers\n",
+            "(1000, 8)\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#min-max normalization\n",
+        "from sklearn.preprocessing import MinMaxScaler\n",
+        "import pandas as pd\n",
+        "\n",
+        "scaler=MinMaxScaler()\n",
+        "emp_minmax=scaler.fit_transform(emp[num_cols])\n",
+        "\n",
+        "emp_minmax=pd.DataFrame(emp_minmax,columns=num_cols)\n",
+        "print(emp_minmax.head())\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "WeQ7d_iNEpZT",
+        "outputId": "5f4d627d-56f0-4726-e981-6ca6a1af2544"
+      },
+      "execution_count": 20,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "     Salary   Bonus %\n",
+            "0  0.542191  0.313276\n",
+            "1  0.234301  0.166675\n",
+            "2  0.831864  0.572825\n",
+            "3  0.902494  0.439801\n",
+            "4  0.574359  0.019758\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#standardaization\n",
+        "from sklearn.preprocessing import StandardScaler\n",
+        "emp_standard=scaler.fit_transform(emp[num_cols])\n",
+        "\n",
+        "emp_standard=pd.DataFrame(emp_standard,columns=num_cols)\n",
+        "print(emp_standard.head())\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "18A1I2urHBS-",
+        "outputId": "808fbda7-d4f4-4a89-d9e8-d2b617564c43"
+      },
+      "execution_count": 21,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "     Salary   Bonus %\n",
+            "0  0.542191  0.313276\n",
+            "1  0.234301  0.166675\n",
+            "2  0.831864  0.572825\n",
+            "3  0.902494  0.439801\n",
+            "4  0.574359  0.019758\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "bD_fj2XoKhbR"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
